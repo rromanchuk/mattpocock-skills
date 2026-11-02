@@ -1,16 +1,16 @@
 ## What it does
 
-`code-review` reviews the diff between `HEAD` and a fixed point you name (a commit, a branch, a tag, `main`, `HEAD~5`) along two axes. **Standards** asks whether the code follows how this repo writes code. **Spec** asks whether the code does what the originating issue or [spec](https://www.aihero.dev/ai-coding-dictionary/spec) asked for. Each axis runs in its own [sub-agent](https://www.aihero.dev/ai-coding-dictionary/subagent) so neither sees the other's reasoning.
+`mattpocock-code-review` reviews the diff between `HEAD` and a fixed point you name (a commit, a branch, a tag, `main`, `HEAD~5`) along two axes. **Standards** asks whether the code follows how this repo writes code. **Spec** asks whether the code does what the originating issue or [spec](https://www.aihero.dev/ai-coding-dictionary/spec) asked for. Each axis runs in its own [sub-agent](https://www.aihero.dev/ai-coding-dictionary/subagent) so neither sees the other's reasoning.
 
 The skill never merges or re-ranks the two axes. The report ends with a worst issue *per axis* and declines to name a single winner across them. A change can pass one axis and fail the other. Code that follows every convention but implements the wrong thing passes Standards and fails Spec. Code that does exactly what the [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket) asked but breaks the repo's conventions does the reverse. A blended verdict lets the passing axis hide the failing one.
 
 ## When to reach for it
 
-Type `/code-review`, or the agent reaches for it automatically when you ask to review a branch, a PR, work in progress, or anything "since X".
+Type `/mattpocock-code-review`, or the agent reaches for it automatically when you ask to review a branch, a PR, work in progress, or anything "since X".
 
 | Your situation | Reach for |
 | --- | --- |
-| A diff exists and you want to know if it is built right *and* is the right thing | `code-review` |
+| A diff exists and you want to know if it is built right *and* is the right thing | `mattpocock-code-review` |
 | You want bugs hunted in the diff: null paths, races, off-by-one | Claude Code's own built-in review, not this one (see the name clash below) |
 | Nothing is written yet and you want it written test-first | [tdd](https://aihero.dev/skills-tdd) |
 | A whole spec needs building, review included | [implement](https://aihero.dev/skills-implement), which calls this skill itself |
@@ -56,13 +56,13 @@ This is the most reported problem with the skill, and it is not fixed. Claude Co
 
 One answer is to remove Claude Code's built-in skills entirely. That saves a lot of [context](https://www.aihero.dev/ai-coding-dictionary/context), and the collision stops mattering. The shadowing itself is arguably a Claude Code [harness](https://www.aihero.dev/ai-coding-dictionary/harness) bug (a skill author should be free to name a skill anything), so the other answer is to rename the local copy. `npx skills update` undoes an edit to the frontmatter or a renamed directory. The durable workaround users report is to fork the skill to a new name and drop `code-review` from the managed set. Keep a note of the commit you forked from so you can re-sync by hand.
 
-**Its sub-agents keep invoking `/code-review` again and spawn more agents.**
+**Its sub-agents keep invoking `/mattpocock-code-review` again and spawn more agents.**
 
 This is a known open bug. Several people have reproduced it, in more than one harness. The Standards and Spec prompts do not forbid delegation, so a sub-agent can find the skill again and fan out again. One report reached more than 50 agents. The fix people have applied on forks is one line appended to both sub-agent briefs: "Do not invoke `/code-review` or spawn additional agents: perform this review directly." Some prefer to handle it at the harness level so every skill inherits the guard. Neither is in the shipped skill yet. If you run this unattended, watch the agent count.
 
 **Should I run it in the same [session](https://www.aihero.dev/ai-coding-dictionary/session) that wrote the code?**
 
-Prefer a fresh one. As one reader put it: "Same context reviewing itself isn't review, it's confirmation bias with a slash command." An agent that reviews in the authoring session has every assumption that shaped the code in its context. An independent reviewer would not have that context. This is also why people ask for [implement](https://aihero.dev/skills-implement) without its built-in review step, because that step runs the review inside the session that just wrote the diff. The independent version is to invoke `/code-review` yourself from a clean session.
+Prefer a fresh one. As one reader put it: "Same context reviewing itself isn't review, it's confirmation bias with a slash command." An agent that reviews in the authoring session has every assumption that shaped the code in its context. An independent reviewer would not have that context. This is also why people ask for [implement](https://aihero.dev/skills-implement) without its built-in review step, because that step runs the review inside the session that just wrote the diff. The independent version is to invoke `/mattpocock-code-review` yourself from a clean session.
 
 **After every ticket, or once at the end?**
 
@@ -90,7 +90,7 @@ No. It diffs `<fixed-point>...HEAD`. The three-dot form measures from the merge-
 
 ## Where it fits
 
-`code-review` is the review step near the tail of the build chain: `grill-with-docs → to-spec → to-tickets → implement → code-review → retro`. It also stands alone on any branch or PR you point it at.
+`mattpocock-code-review` is the review step near the tail of the build chain: `grill-with-docs → to-spec → to-tickets → implement → mattpocock-code-review → retro`. It also stands alone on any branch or PR you point it at.
 
 - [implement](https://aihero.dev/skills-implement) is the closest neighbour. It drives the build and calls this skill as its own closing review before committing. [implement-spec](https://aihero.dev/skills-implement-spec) does the same once, over the whole integration branch.
 - [retro](https://aihero.dev/skills-retro) comes after it and tunes it. When a session shows the review missing a class of mistake, `retro` proposes the check or the `CODING_STANDARDS.md` rule the Standards axis then reads.
